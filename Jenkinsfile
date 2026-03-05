@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'maven3'
+    }
+
     environment {
         DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials-id')
         IMAGE_NAME = 'nikxdomain/scientific-calculator'
@@ -34,3 +38,4 @@ pipeline {
         }
     }
 }
+	
