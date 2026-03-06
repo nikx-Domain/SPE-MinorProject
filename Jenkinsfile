@@ -4,17 +4,6 @@ pipeline {
         maven 'maven3'
     }
 
-    post {
-        failure {
-            mail to: 'niks2veg@gmail.com',
-                 subject: "Build Failed: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
-                 body: "Check the console output at: ${env.BUILD_URL}"
-        }
-        success {
-            echo 'Build succeeded! No email sent.'
-        }
-    }	
-
     environment {
         DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials-id')
         IMAGE_NAME = 'nikxdomain/scientific-calculator'
@@ -25,6 +14,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
+		sh 'exit 1'
             }
         }
 
@@ -48,4 +38,15 @@ pipeline {
         }
     }
 
+	post {
+        	failure {
+	            mail to: 'niks2veg@gmail.com',
+                    subject: "Build Failed: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
+                    body: "Check the console output at: ${env.BUILD_URL}"
+	        }
+        	success {
+	            echo 'Build succeeded! No email sent.'
+	        }
+	 }
+}
 	
