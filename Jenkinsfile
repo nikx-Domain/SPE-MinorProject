@@ -14,7 +14,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
-                //sh 'exit 1'
+                //sh 'exit 4'
             }
         }
 
@@ -45,8 +45,10 @@ pipeline {
                     body: "Check the console output at: ${env.BUILD_URL}"
 	        }
         	success {
-	            echo 'Build succeeded! No email sent.'
-	        }
+         	   mail to: 'niks2veg@gmail.com',
+                	 subject: "Build Succeeded: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
+	                 body: "The pipeline has completed successfully. View details here: ${env.BUILD_URL}"
+        }
 	 }
 }
 	
