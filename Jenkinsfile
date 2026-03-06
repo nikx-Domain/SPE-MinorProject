@@ -40,7 +40,7 @@ pipeline {
             }
         }
 
-        stage('Push Docker Image') {
+        //stage('Push Docker Image') {
             steps {
                 sh "echo \$DOCKER_HUB_CREDENTIALS_PSW | docker login -u \$DOCKER_HUB_CREDENTIALS_USR --password-stdin"
                 sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
