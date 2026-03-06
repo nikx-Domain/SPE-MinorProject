@@ -1,0 +1,21 @@
+---
+- name: Deploy Scientific Calculator
+  hosts: managed_hosts
+  tasks:
+    - name: Pull the latest Docker image
+      docker_image:
+        name: nikxdomain/scientific-calculator:latest
+        source: pull
+
+    - name: Remove old container if it exists
+      docker_container:
+        name: calculator_app
+        state: absent
+
+    - name: Run the new container
+      docker_container:
+        name: calculator_app
+        image: nikxdomain/scientific-calculator:latest
+        state: started
+        interactive: yes
+        tty: yes
