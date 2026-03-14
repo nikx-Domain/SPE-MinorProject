@@ -14,7 +14,6 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
-                //sh 'exit 4'
             }
         }
 
@@ -36,19 +35,26 @@ pipeline {
                 sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
             }
         }
+
+        stage('Deployment') {
+            steps {
+                dir('ansible') {
+                    sh "ansible-playbook -i inventory playbook.yml"
+                }
+            }
+        }
     }
 
-	post {
-        	failure {
-	            mail to: 'niks2veg@gmail.com',
-                    subject: "Build Failed: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
-                    body: "Check the console output at: ${env.BUILD_URL}"
-	        }
-        	success {
-         	   mail to: 'niks2veg@gmail.com',
-                	 subject: "Build Succeeded: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
-	                 body: "The pipeline has completed successfully. View details here: ${env.BUILD_URL}"
+    post {
+        failure {
+            mail to: 'niks2veg@gmail.com',
+                 subject: "Build Failed: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
+                 body: "Check the console output at: ${env.BUILD_URL}" 
         }
-	 }
+        success {
+            mail to: 'niks2veg@gmail.com',
+                 subject: "Build Succeeded: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
+                 body: "The pipeline has completed successfully. View details here: ${env.BUILD_URL}"
+        }
+    }
 }
-	
