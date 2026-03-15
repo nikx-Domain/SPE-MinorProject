@@ -2,67 +2,125 @@ import java.util.Scanner;
 import java.util.logging.Logger;
 import java.util.logging.FileHandler;
 import java.util.logging.SimpleFormatter;
+import java.util.InputMismatchException;
 
 public class ScientificCalculator {
+
     private static final Logger logger = Logger.getLogger("CalculatorLog");
 
     public static void main(String[] args) {
+
         try {
             FileHandler fh = new FileHandler("calculator.log", true);
+            fh.setFormatter(new SimpleFormatter());
             logger.addHandler(fh);
-            SimpleFormatter formatter = new SimpleFormatter();
-            fh.setFormatter(formatter);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Logging setup failed.");
         }
 
         Scanner scanner = new Scanner(System.in);
+
         while (true) {
-            System.out.println("\n1. Square Root (√x)\n2. Factorial (x!)\n3. Natural Log (ln(x))\n4. Power (x^b)\n5. Exit");
-            System.out.print("Enter choice: ");
-            int choice = scanner.nextInt();
-            
-            if (choice == 5) {
-                logger.info("Application exited");
-                break;
-            }
 
-            System.out.print("Enter number: ");
-            double x = scanner.nextDouble();
-            double result = 0;
+            System.out.println("\n---- Scientific Calculator ----");
+            System.out.println("1. Square Root (√x)");
+            System.out.println("2. Factorial (x!)");
+            System.out.println("3. Natural Log (ln x)");
+            System.out.println("4. Power (x^b)");
+            System.out.println("5. Exit");
 
-            switch (choice) {
-                case 1:
-                    result = Math.sqrt(x);
-                    logger.info("Square Root operation requested. Input: " + x + ", Result: " + result);
+            try {
+
+                System.out.print("Enter choice: ");
+                int choice = scanner.nextInt();
+
+                if (choice == 5) {
+                    logger.info("Application exited");
+                    System.out.println("Goodbye.");
                     break;
-                case 2:
-                    result = factorial((int)x);
-                    logger.info("Factorial operation requested. Input: " + x + ", Result: " + result);
-                    break;
-                case 3:
-                    result = Math.log(x);
-                    logger.info("Natural Log operation requested. Input: " + x + ", Result: " + result);
-                    break;
-                case 4:
-                    System.out.print("Enter exponent: ");
-                    double b = scanner.nextDouble();
-                    result = Math.pow(x, b);
-                    logger.info("Power operation requested. Base: " + x + ", Exponent: " + b + ", Result: " + result);
-                    break;
-                default:
-                    System.out.println("Invalid choice");
-                    continue;
+                }
+
+                System.out.print("Enter number: ");
+                double x = scanner.nextDouble();
+
+                double result;
+
+                switch (choice) {
+
+                    case 1: // Square Root
+                        if (x < 0) {
+                            System.out.println("Error: Square root of negative number not allowed.");
+                            logger.warning("Invalid sqrt input: " + x);
+                            break;
+                        }
+                        result = Math.sqrt(x);
+                        System.out.println("Result: " + result);
+                        logger.info("sqrt(" + x + ") = " + result);
+                        break;
+
+                    case 2: // Factorial
+                        if (x < 0 || x != Math.floor(x)) {
+                            System.out.println("Error: Factorial only defined for non-negative integers.");
+                            logger.warning("Invalid factorial input: " + x);
+                            break;
+                        }
+                        result = factorial((int) x);
+                        System.out.println("Result: " + result);
+                        logger.info(x + "! = " + result);
+                        break;
+
+                    case 3: // Natural Log
+                        if (x <= 0) {
+                            System.out.println("Error: Log undefined for zero or negative numbers.");
+                            logger.warning("Invalid log input: " + x);
+                            break;
+                        }
+                        result = Math.log(x);
+                        System.out.println("Result: " + result);
+                        logger.info("ln(" + x + ") = " + result);
+                        break;
+
+                    case 4: // Power
+                        System.out.print("Enter exponent: ");
+                        double b = scanner.nextDouble();
+
+                        if (x < 0 && b != Math.floor(b)) {
+                            System.out.println("Error: Negative base with fractional exponent is invalid.");
+                            logger.warning("Invalid power operation: " + x + "^" + b);
+                            break;
+                        }
+
+                        result = Math.pow(x, b);
+                        System.out.println("Result: " + result);
+                        logger.info(x + "^" + b + " = " + result);
+                        break;
+
+                    default:
+                        System.out.println("Invalid choice.");
+                }
+
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter numeric values.");
+                logger.warning("Non-numeric input entered.");
+                scanner.nextLine(); // clear buffer
             }
-            System.out.println("Result: " + result);
         }
+
         scanner.close();
     }
 
-    public static double factorial(int n) {
-        if (n < 0) return -1;
-        double res = 1;
-        for (int i = 2; i <= n; i++) res *= i;
-        return res;
+    public static long factorial(int n) {
+
+        if (n > 20) {
+            System.out.println("Warning: result may overflow.");
+        }
+
+        long result = 1;
+
+        for (int i = 2; i <= n; i++) {
+            result *= i;
+        }
+
+        return result;
     }
 }
